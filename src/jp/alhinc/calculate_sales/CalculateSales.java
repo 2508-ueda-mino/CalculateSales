@@ -42,6 +42,7 @@ public class CalculateSales {
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
 		File[] files = new File("C:\\Users\\trainee1188\\Desktop\\売上集計課題").listFiles();
 		List<File> rcdFiles = new ArrayList<>();
+
 		for(int i = 0; i < files.length ; i++) {
 			if(files[i].getName().matches("^[0-9]{8}.+rcd$")){
 				rcdFiles.add(files[i]);
@@ -90,10 +91,6 @@ public class CalculateSales {
 				}
 			}
 		}
-
-
-
-
 
 
 		// 支店別集計ファイル書き込み処理
