@@ -1,13 +1,16 @@
 package jp.alhinc.calculate_sales;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 
 public class CalculateSales {
@@ -40,7 +43,7 @@ public class CalculateSales {
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
-		File[] files = new File("C:\\Users\\trainee1188\\Desktop\\売上集計課題").listFiles();
+		File[] files = new File("C:\\Users\\trainee1188\\Desktop\\売上集計課題").listFiles();//売上集計課題をfilesに入れた
 		List<File> rcdFiles = new ArrayList<>();
 
 		for(int i = 0; i < files.length ; i++) {
@@ -157,9 +160,46 @@ public class CalculateSales {
 	 * @return 書き込み可否
 	 */
 	private static boolean writeFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
-		// ※ここに書き込み処理を作成してください。(処理内容3-1)
+		BufferedWriter bw = null;// ※ここに書き込み処理を作成してください。(処理内容3-1)
+
+		try {
+			File file = new File(path, fileName);
+			FileWriter fw = new FileWriter(file);
+			bw= new BufferedWriter(fw);
+
+			// keyが取得できれば売上金額がわかる
+			for (String key : branchSales.keySet()) {
+
+				branchSales.get(key);	//売上金額を取り出したい		//出力したい部品①
+				// 支店名を取り出したい　//出力したい部品②
+				branchNames.get(key);
+				// 支店コードを取り出したい　//出力したい部品③
+				//key;
+				//　取り出した３つを⽀店別集計ファイルに書き込みたい
+				bw.write(key + "," + branchNames.get(key) + "," + branchSales.get(key));
+
+				bw.newLine(); //改行
+			}
+
+
+
+		} catch(IOException e) {
+			System.out.println(UNKNOWN_ERROR);
+
+		} finally {
+			if(bw != null) {
+				try {
+					// ファイルを閉じる
+					bw.close();
+				} catch(IOException e) {
+					System.out.println(UNKNOWN_ERROR);
+					return false;
+				}
+			}
+		}
+
 
 		return true;
 	}
-
 }
+
