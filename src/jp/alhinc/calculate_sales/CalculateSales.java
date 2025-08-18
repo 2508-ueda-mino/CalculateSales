@@ -43,11 +43,11 @@ public class CalculateSales {
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
-		File[] files = new File("C:\\Users\\trainee1188\\Desktop\\売上集計課題").listFiles();//売上集計課題をfilesに入れた
+		File[] files = new File(args[0]).listFiles();//売上集計課題をfilesに入れた
 		List<File> rcdFiles = new ArrayList<>();
 
 		for(int i = 0; i < files.length ; i++) {
-			if(files[i].getName().matches("^[0-9]{8}.+rcd$")){
+			if(files[i].getName().matches("^[0-9]{8}\\.rcd$")){
 				rcdFiles.add(files[i]);
 			}
 		}
@@ -55,7 +55,7 @@ public class CalculateSales {
 		BufferedReader br = null;
 		for(int i = 0; i < rcdFiles.size(); i++) {
 			try {
-				File file = new File("C:\\Users\\trainee1188\\Desktop\\売上集計課題", rcdFiles.get(i).getName());
+				File file = new File(args[0], rcdFiles.get(i).getName());
 				FileReader fr = new FileReader(file);
 				br = new BufferedReader(fr);
 				String line; //変数名を行「line」とする
@@ -126,10 +126,9 @@ public class CalculateSales {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
 				String[] items = line.split(",");
 
-				branchNames.put (items[0],items[1]);
-				branchSales.put(items[0],0L);
+				branchNames.put(items[0], items[1]);
+				branchSales.put(items[0], 0L);
 
-				System.out.println(line);
 			}
 
 		} catch(IOException e) {
@@ -185,6 +184,7 @@ public class CalculateSales {
 
 		} catch(IOException e) {
 			System.out.println(UNKNOWN_ERROR);
+			return false;
 
 		} finally {
 			if(bw != null) {
