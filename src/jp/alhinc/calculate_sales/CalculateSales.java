@@ -43,11 +43,11 @@ public class CalculateSales {
 		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
-		File[] files = new File(args[0]).listFiles();//売上集計課題をfilesに入れた
+		File[] files = new File(args[0]).listFiles();//売上集計課題をfilesに入れた //パス名は変数で記載した
 		List<File> rcdFiles = new ArrayList<>();
 
 		for(int i = 0; i < files.length ; i++) {
-			if(files[i].getName().matches("^[0-9]{8}\\.rcd$")){
+			if(files[i].getName().matches("^[0-9]{8}\\.rcd$")){  //ドットは文字列として書いた
 				rcdFiles.add(files[i]);
 			}
 		}
@@ -55,7 +55,7 @@ public class CalculateSales {
 		BufferedReader br = null;
 		for(int i = 0; i < rcdFiles.size(); i++) {
 			try {
-				File file = new File(args[0], rcdFiles.get(i).getName());
+				File file = new File(args[0], rcdFiles.get(i).getName());  //パス名は変数で記載した
 				FileReader fr = new FileReader(file);
 				br = new BufferedReader(fr);
 				String line; //変数名を行「line」とする
