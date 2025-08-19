@@ -56,6 +56,8 @@ public class CalculateSales {
 		for(int i = 0; i < rcdFiles.size(); i++) {
 			try {
 				File file = new File(args[0], rcdFiles.get(i).getName());  //パス名は変数で記載した
+
+
 				FileReader fr = new FileReader(file);
 				br = new BufferedReader(fr);
 				String line; //変数名を行「line」とする
@@ -74,7 +76,7 @@ public class CalculateSales {
 				//読み込んだ売上⾦額を加算します。
 				//※詳細は後述で説明
 
-				Long saleAmount = branchSales.get(fileContents.get(0)) +fileSale;
+				Long saleAmount = branchSales.get(fileContents.get(0)) + fileSale;
 
 				//加算した売上⾦額をMapに追加します。
 				branchSales.put(fileContents.get(0), saleAmount);
@@ -117,6 +119,10 @@ public class CalculateSales {
 
 		try {
 			File file = new File(path, fileName);
+			if(!file.exists()) { //支店定義ファイルが存在しない場合、コンソールにエラーメッセージ「支店定義ファイルが存在しません」を表示したい
+				System.out.println(FILE_NOT_EXIST);
+				return false;
+			}
 			FileReader fr = new FileReader(file);
 			br = new BufferedReader(fr);
 
@@ -125,6 +131,14 @@ public class CalculateSales {
 			while((line = br.readLine()) != null) {
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
 				String[] items = line.split(",");
+				if((items.length != 2) || (!items[0].matches("^[0-9]{3}"))){
+
+
+					System.out.println(FILE_INVALID_FORMAT); //「支店定義ファイルのフォーマットが不正です」と表示したい
+					return false;
+
+				}
+
 
 				branchNames.put(items[0], items[1]);
 				branchSales.put(items[0], 0L);
