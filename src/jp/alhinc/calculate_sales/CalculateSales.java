@@ -52,10 +52,10 @@ public class CalculateSales {
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
 		File[] files = new File(args[0]).listFiles();//売上集計課題をfilesに入れた //パス名は変数で記載した
-		List<File> rcdFiles = new ArrayList<>();
+		List<File> rcdFiles = new ArrayList<>(); //rcdFilesは売上ファイル
 
 		for(int i = 0; i < files.length ; i++) {
-			if(files[i].getName().matches("^[0-9]{8}\\.rcd$")){  //ドットは文字列として書いた
+			if(files[i].isFile() && files[i].getName().matches("^[0-9]{8}\\.rcd$")){  //ドットは文字列として書いた////対象がファイルであり、「数字8桁.rcd」なのか判定したい
 				rcdFiles.add(files[i]);
 			}
 
@@ -65,14 +65,13 @@ public class CalculateSales {
 				System.out.println(UNKNOWN_ERROR);
 				return;
 			}
-			 //対象がファイルであり、「数字8桁.rcd」なのか判定したい
-			if(args[0].isFile() && files[i].getName().matches("^[0-9]{8}\\.rcd$")) {
+
 
 				System.out.println(UNKNOWN_ERROR);
 				return;
 
 			}
-		}
+
 		Collections.sort(rcdFiles);//連判チェックする前に売上ファイルを保持しているListをソートする
 		for(int i = 0; i < rcdFiles.size() -1; i++) { //rcdFiles内を順番に連番か確認
 			int former = Integer.parseInt(rcdFiles.get(i).getName().substring(0, 8));
@@ -107,15 +106,18 @@ public class CalculateSales {
 						return;
 					}
 				}
-				////売上ファイルから読み込んだ売上金額をMapに加算していくために、型の変換を行います。
-				//※詳細は後述で説明
-				long fileSale = Long.parseLong(fileContents.get(1)); //String型からLong型へ型変換
-				if(!fileContents.get(1).matches("[^0-9]")) { //売上⾦額が数字ではなかった場合は
+
+
+
+				if(!fileContents.get(1).matches("^[0-9]+$")) { //売上⾦額が数字ではなかった場合は
 
 					System.out.println(UNKNOWN_ERROR); //エラーメッセージをコンソールに表示したい
 					return;
 
 				}
+
+			//売上ファイルから読み込んだ売上金額をMapに加算していくために、型の変換を行います。
+				long fileSale = Long.parseLong(fileContents.get(1)); //String型からLong型へ型変換
 				Long saleAmount = branchSales.get(fileContents.get(0)) + fileSale;
 				if(saleAmount >= 10000000000L){ //売上⾦額が11桁以上の場合、エラーメッセージをコンソールに表⽰します。
 					System.out.println(SALESAMOUNT_10_DIGITS_EXCEEDED);
