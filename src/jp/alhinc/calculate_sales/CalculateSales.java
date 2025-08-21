@@ -28,7 +28,7 @@ public class CalculateSales {
 	private static final String FILE_INVALID_FORMAT = "支店定義ファイルのフォーマットが不正です";
 	private static final String FILE_SERIAL_NUMBER_NAME = "売上ファイル名が連番になっていません";
 	private static final String SALESAMOUNT_10_DIGITS_EXCEEDED = "合計金額が10桁を超えました";
-	private static final String NOT_CLEAR_INVALID_FORMAT = "<該当ファイル名>の支店コードが不正です";
+	private static final String NOT_CLEAR_INVALID_FORMAT = "の支店コードが不正です";
 	private static final String FILENAME_INVALID_FORMAT = "<該当ファイル名>のフォーマットが不正です";
 
 
@@ -50,32 +50,32 @@ public class CalculateSales {
 			return;
 		}
 
+
+
+		//エラー処理④　動かす前にコマンドライン引数が1つ設定されているか確認
+		if (args.length != 1) {
+
+			System.out.println(UNKNOWN_ERROR);
+			return;
+		}
+
+
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
 		File[] files = new File(args[0]).listFiles();//売上集計課題をfilesに入れた //パス名は変数で記載した
 		List<File> rcdFiles = new ArrayList<>(); //rcdFilesは売上ファイル
 
+
 		for(int i = 0; i < files.length ; i++) {
-			if(files[i].isFile() && files[i].getName().matches("^[0-9]{8}\\.rcd$")){  //ドットは文字列として書いた////対象がファイルであり、「数字8桁.rcd」なのか判定したい
+			//対象がファイルであり、「数字8桁.rcd」なのか判定したい
+			if(files[i].isFile() && files[i].getName().matches("^[0-9]{8}\\.rcd$")){  //ドットは文字列として書いた
 				rcdFiles.add(files[i]);
 			}
-
-
-			if (args.length != 1) {
-
-				System.out.println(UNKNOWN_ERROR);
-				return;
-			}
-
-
-				System.out.println(UNKNOWN_ERROR);
-				return;
-
-			}
+		}
 
 		Collections.sort(rcdFiles);//連判チェックする前に売上ファイルを保持しているListをソートする
 		for(int i = 0; i < rcdFiles.size() -1; i++) { //rcdFiles内を順番に連番か確認
 			int former = Integer.parseInt(rcdFiles.get(i).getName().substring(0, 8));
-			int latter = Integer.parseInt(rcdFiles.get(i+1).getName().substring(0, 8));
+			int latter = Integer.parseInt(rcdFiles.get(i + 1).getName().substring(0, 8));
 
 			if((latter - former) != 1) { //2つのファイル名の数字を⽐較して、差が1ではなかったら、
 
@@ -101,13 +101,14 @@ public class CalculateSales {
 					//読み込んだ内容をリストに入れる
 
 					fileContents.add(line);
-					if(fileContents.size() != 2) {
-						System.out.println(FILENAME_INVALID_FORMAT);
-						return;
-					}
+
 				}
 
-
+				//エラー処理②売上ファイルを読み込んだ直後にエラーで確認したい
+				if (!branchNames.containsKey(fileContents.get(0))) { //支店情報を保持しているMapに売上ファイルの支店コードが存在しなかった場合は、
+					System.out.println("rcdFiles.get(i).getName"+ NOT_CLEAR_INVALID_FORMAT); //　　　　の支店コードが不正ですと表示させる
+					return;
+				}
 
 				if(!fileContents.get(1).matches("^[0-9]+$")) { //売上⾦額が数字ではなかった場合は
 
@@ -115,14 +116,20 @@ public class CalculateSales {
 					return;
 
 				}
+				//エラー処理③　コードレビュー修正場所ここであってる？売上ファイル全部読み込んでから2ケタか確認したい
+				if(fileContents.size() != 2) { //売上ファイルの桁数が2行ではなかった場合は、
+					System.out.println(FILENAME_INVALID_FORMAT);//＜＞支店コードが不正ですと表示する
+					return;
+				}
 
-			//売上ファイルから読み込んだ売上金額をMapに加算していくために、型の変換を行います。
+				//売上ファイルから読み込んだ売上金額をMapに加算していくために、型の変換を行います。
 				long fileSale = Long.parseLong(fileContents.get(1)); //String型からLong型へ型変換
 				Long saleAmount = branchSales.get(fileContents.get(0)) + fileSale;
 				if(saleAmount >= 10000000000L){ //売上⾦額が11桁以上の場合、エラーメッセージをコンソールに表示したい
 					System.out.println(SALESAMOUNT_10_DIGITS_EXCEEDED);
 					return;
 				}
+
 				branchSales.put(fileContents.get(0), saleAmount);//加算した売上⾦額をMapに追加します。
 
 			} catch(IOException e) {
@@ -162,6 +169,8 @@ public class CalculateSales {
 	private static boolean readFile(String path, String fileName, Map<String, String> branchNames, Map<String, Long> branchSales) {
 		BufferedReader br = null;
 
+
+
 		try {
 			File file = new File(path, fileName);
 			if(!file.exists()) { //支店定義ファイルが存在しない場合、コンソールにエラーメッセージ「支店定義ファイルが存在しません」を表示したい
@@ -174,6 +183,7 @@ public class CalculateSales {
 			String line;
 			// 一行ずつ読み込む
 			while((line = br.readLine()) != null) {
+
 				// ※ここの読み込み処理を変更してください。(処理内容1-2)
 				String[] items = line.split(",");
 				if((items.length != 2) || (!items[0].matches("^[0-9]{3}"))){
@@ -237,10 +247,7 @@ public class CalculateSales {
 
 				bw.newLine(); //改行
 
-				if (!branchNames.containsKey(key)) { //支店情報を保持しているMapに売上ファイルの支店コードが存在しなかった場合は、
-					System.out.println(NOT_CLEAR_INVALID_FORMAT); //<該当ファイル名>の支店コードが不正ですと表示させる
-					return false;
-				}
+
 			}
 
 
