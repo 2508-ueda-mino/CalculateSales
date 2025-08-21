@@ -119,7 +119,7 @@ public class CalculateSales {
 			//売上ファイルから読み込んだ売上金額をMapに加算していくために、型の変換を行います。
 				long fileSale = Long.parseLong(fileContents.get(1)); //String型からLong型へ型変換
 				Long saleAmount = branchSales.get(fileContents.get(0)) + fileSale;
-				if(saleAmount >= 10000000000L){ //売上⾦額が11桁以上の場合、エラーメッセージをコンソールに表⽰します。
+				if(saleAmount >= 10000000000L){ //売上⾦額が11桁以上の場合、エラーメッセージをコンソールに表示したい
 					System.out.println(SALESAMOUNT_10_DIGITS_EXCEEDED);
 					return;
 				}
