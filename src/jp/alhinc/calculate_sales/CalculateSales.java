@@ -29,7 +29,7 @@ public class CalculateSales {
 	private static final String FILE_SERIAL_NUMBER_NAME = "売上ファイル名が連番になっていません";
 	private static final String SALESAMOUNT_10_DIGITS_EXCEEDED = "合計金額が10桁を超えました";
 	private static final String NOT_CLEAR_INVALID_FORMAT = "の支店コードが不正です";
-	private static final String FILENAME_INVALID_FORMAT = "<該当ファイル名>のフォーマットが不正です";
+	private static final String FILENAME_INVALID_FORMAT = "フォーマットが不正です";
 
 
 	/**
@@ -43,22 +43,17 @@ public class CalculateSales {
 		// 支店コードと売上金額を保持するMap
 		Map<String, Long> branchSales = new HashMap<>();
 
-
-
-		// 支店定義ファイル読み込み処理
-		if(!readFile(args[0], FILE_NAME_BRANCH_LST, branchNames, branchSales)) {
-			return;
-		}
-
-
-
-		//エラー処理④　動かす前にコマンドライン引数が1つ設定されているか確認
+		//エラー処理④ここで場所あってますか？？確認！　動かす前にコマンドライン引数が1つ設定されているか確認
 		if (args.length != 1) {
 
 			System.out.println(UNKNOWN_ERROR);
 			return;
 		}
 
+		// 支店定義ファイル読み込み処理
+		if(!readFile(args[0], FILE_NAME_BRANCH_LST, branchNames, branchSales)) {
+			return;
+		}
 
 		// ※ここから集計処理を作成してください。(処理内容2-1、2-2)
 		File[] files = new File(args[0]).listFiles();//売上集計課題をfilesに入れた //パス名は変数で記載した
@@ -104,22 +99,24 @@ public class CalculateSales {
 
 				}
 
-				//エラー処理②売上ファイルを読み込んだ直後にエラーで確認したい
-				if (!branchNames.containsKey(fileContents.get(0))) { //支店情報を保持しているMapに売上ファイルの支店コードが存在しなかった場合は、
-					System.out.println("rcdFiles.get(i).getName"+ NOT_CLEAR_INVALID_FORMAT); //　　　　の支店コードが不正ですと表示させる
+				//エラー処理③　コードレビュー修正場所ここであってる？売上ファイル全部読み込んでから2ケタか確認したい
+				if(fileContents.size() != 2) { //売上ファイルの桁数が2行ではなかった場合は、
+					System.out.println(rcdFiles.get(i).getName() + FILENAME_INVALID_FORMAT);//.rcdのフォーマットが不正ですと表示する
 					return;
 				}
 
+				//エラー処理②売上ファイルを読み込んだ直後にエラーで確認したい
+				if (!branchNames.containsKey(fileContents.get(0))) { //支店情報を保持しているMapに売上ファイルの支店コードが存在しなかった場合は、
+					System.out.println(rcdFiles.get(i).getName()+ NOT_CLEAR_INVALID_FORMAT); //　　　　の支店コードが不正ですと表示させる
+					return;
+				}
+
+				//エラー処理
 				if(!fileContents.get(1).matches("^[0-9]+$")) { //売上⾦額が数字ではなかった場合は
 
 					System.out.println(UNKNOWN_ERROR); //エラーメッセージをコンソールに表示したい
 					return;
 
-				}
-				//エラー処理③　コードレビュー修正場所ここであってる？売上ファイル全部読み込んでから2ケタか確認したい
-				if(fileContents.size() != 2) { //売上ファイルの桁数が2行ではなかった場合は、
-					System.out.println(FILENAME_INVALID_FORMAT);//＜＞支店コードが不正ですと表示する
-					return;
 				}
 
 				//売上ファイルから読み込んだ売上金額をMapに加算していくために、型の変換を行います。
